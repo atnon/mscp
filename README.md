@@ -11,7 +11,7 @@ Might change as times change, but as of now:
 * Linux-based Minecraft server with filesystem access
 * PHP+PDO
 * MySQL
-* Python
+* Python 2.6
 * [msm](https://github.com/marcuswhybrow/minecraft-server-manager)
 
 > Organically grown.
