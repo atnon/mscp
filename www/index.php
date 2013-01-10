@@ -2,83 +2,90 @@
 <html lang='en'>
 <head>
 	<meta charset='utf-8' />
-	<title>MineCP</title>
+	<title>MSCP</title>
 	<link href='http://fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css' />
 	<style>
 	* { font-family: 'Courier', sans-serif; font-size: 14px; }
-	html {
+	html,body {
 		width:	100%;
+        height: 100%;
 		margin: 0px;
 		padding: 0px;
 	}
-	#window {
-		position: relative;
-		width: 100%;
-		margin: 0px;
-		padding: 0px;
-		height: 100%;
-	}	
 	.header {
 		position: absolute;
 		top: 0px;
 		left: 0px;
 		width: 100%;
-		margin: 0;
+		margin: 0px;
 		background-color: #364b18;
 		opacity: 0.95;
 		border: none;
 		border-bottom: 1px solid black;
+        z-index: 9999;
 	}
 	.contentpane {
 		width: 100%;
-		overflow-y: scroll;
 		margin: 0px;
 		padding: 0px;
-		padding-bottom: 0.5em;
-		margin-bottom: 1.5em;
 		color: #fff;
 		background-color: #333;
-		height: 768px;
+		height: 100%;
+        top: 0px;
+        bottom: 0px;
+        overflow: hidden; /*FIXME: Dirty trick. Upper scrollbar arrow gets clipped. */
 	}
 	h1 {
-		font-size: 20px;
+		font-size: 1.5em;
 		font-family: 'Monda', sans-serif;
 		line-height: 10px;
+        padding-left: 0.5em;
+        color: white;
 	}
-	.commandline {
-		position: absolute;
-		bottom: 0px;
-		left: 0px;
-		padding: 5px;
-		background-color: #414141;
-		color: #fff;
-		width: 100%;
-		height: 1em;
-		line-height:1em;
-		vertical-align: middle;
-	}
+    .cmdLine {
+        position: relative;
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 1.5em;
+        background-color: inherit;
+        border-top: 1px solid black;
+        bottom: 0px;
+        line-height: 1.5em;
+    }
 	#cmd {
-		position: relative;
 		padding: 0px;
 		margin: 0px;
 		float: left;
 		right: 0px;
 		width: 90%;
 		border: none;
-		height: 1em;
+		height: inherit;
 		background-color: inherit;
 		color: inherit;
 		outline: none;
 		line-height: inherit;
-		vertical-align: top;
-		bottom: 0.1em;
 	}
-	#cmdHead {
-		position: float;
-		float: left;
+    #cmdHead {
+        position: relative;
+        float: left;
+        padding: 0px;
+        margin: 0px;
+        padding-left: 0.5em;
+        height: inherit;
+        background-color: inherit;
+        line-height: inherit;
 	}
-	table { width: 100%;
-		height: 100%;
+    .logContainer {
+        position: relative;
+        overflow-y: scroll;
+        margin: 0px;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+    }
+	table {
+        width: 100%;
 	}
 	tr:nth-child(even) { background: #404040; }
 	td { padding-left: 0.5em; }
@@ -96,7 +103,7 @@
 			var obj = $('#log');
 			obj.append(text);
 			//obj.scrollTop(obj[0].scrollHeight);	
-			$('.contentpane').scrollTop($('.contentpane')[0].scrollHeight); // Scroll to bottom
+			$('.logContainer').scrollTop($('.logContainer')[0].scrollHeight); // Scroll to bottom
 		}
 		function sendCmd(command) {
 			$.get('pipe.php', {cmd: command});
@@ -153,7 +160,7 @@
 
 		$(document).ready(function () {
 			var history = [];
-			$('.contentpane').scrollTop($('.contentpane')[0].scrollHeight); // Scroll to bottom
+			$('.logContainer').scrollTop($('.logContainer')[0].scrollHeight); // Scroll to bottom
 			//setInterval("updateLog()", 200);
 			updateLog(); // This will run the whole session, triggering itself.
 			$('#cmd').focus(); // Set focus on cmdline
@@ -178,13 +185,13 @@
 			});
 		});
 	</script>
-	<div id="window">
-	<div class='header'><h1>MineCC</h1></div>
+	<div class='header'><h1>MSCP</h1></div>
 	<div class='contentpane'>
-	<table id="log">
-	</table>
-	</div>
-	<div class='commandline'><span id="cmdHead">MineCC>&nbsp;</span><input id='cmd' type='text' /> </div>
+	<div class='logContainer'>
+        <table id="log">
+        </table>
+    </div>
+	<div class="cmdLine"><label for='cmd' id="cmdHead">MSCP>&nbsp;</label><input id='cmd' type='text' /></div>
 	</div>
 </body>
 </html>
