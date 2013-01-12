@@ -1,7 +1,7 @@
 <?php
 require_once('functions.php');
 
-define('SOCKET_LOCATION', 'piper')
+define('SOCKET_LOCATION', 'piper');
 
 if($lastId = readGet('lastId')) {
 	//Seems we know where to start in the list
