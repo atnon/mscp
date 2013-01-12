@@ -1,6 +1,8 @@
 <?php
 require_once('functions.php');
 
+define('SOCKET_LOCATION', 'piper')
+
 if($lastId = readGet('lastId')) {
 	//Seems we know where to start in the list
 	$time = time();
@@ -29,9 +31,16 @@ if($lastId = readGet('lastId')) {
 	}
 } elseif($cmd = readGet('cmd')) {
 	//There is a command to execute
-	$pipe = fopen('piper', 'r+');
-	fwrite($pipe, $cmd);
-	fclose($pipe);
+	if ($socket = create_socket(AF_UNIX, SOCK_STREAM, 0) AND
+		socket_connect($socket, SOCKET_LOCATION) ) {
+		// Socket created and connected successfully, send data.
+		$cmd = $cmd.'\n';
+		socket_send($socket, $cmd, strlen($socket))
+		socket_close($socket);
+	} else {
+		// Something went wrong, output error message.
+		print socket_strerror(socket_last_error());
+	}
 } else {
 	//Business as usual, output last lines from db.
 	try {
