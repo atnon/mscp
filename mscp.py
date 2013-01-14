@@ -5,6 +5,8 @@ import threading
 import os
 import signal
 import sys
+import socket
+import select
 
 threadExit = False
 
@@ -61,13 +63,13 @@ class cmdListner(threading.Thread):
     """Listens for and issues commands to Minecraft server."""
     def __init__(self):
         # Path to pipe.
-        self.pipePath = '/var/www/piper'
+        self.socketPath = '/var/www/piper'
         threading.Thread.__init__(self)
 
     def run(self):
         print "Started cmdListner thread. (ID: %s)" % self.getName()
         # Open pipe for reading.
-        with createPipe(self.pipePath) as pipe:
+        with createSocket(self.socketPath) as sock:
             while not threadExit:
                 data = pipe.readline()
                 if data != '':
@@ -75,28 +77,37 @@ class cmdListner(threading.Thread):
                     msm = sub.Popen(['msm', 'hallian', 'cmd', data],
                                 shell = False, stdout = sub.PIPE)
 
-class createPipe:
-    """ Initializes a pipe and opens it for listening
-        Also does cleaning when done.
+class createSocket:
+    """ Initializes a unix socket, binds and starts listening.
     """
-    def __init__(self, pipePath):
-        self.pipePath = pipePath
+    def __init__(self, socketPath):
+        self.socketPath = socketPath
+        self.buffer = None
 
     def __enter__(self):
-        # Attempt to remove pipe first, since  trying to create an already 
-        # existing pipe will result in an error.
+        # Setup socket handler.
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.setblocking(0)
+        # Attempt to remove socket first, since trying to create an already 
+        # existing socket will result in an error.
         try:
-            os.unlink(self.pipePath)
+            os.unlink(self.socketPath)
         except:
             pass
 
-        # Create pipe.
-        os.mkfifo(self.pipePath)
+        # Bind to socket.
+        self.sock.bind(self.socketPath)
+        self.sock.listen(1)
         # Make pipe writeable.
-        os.chmod(self.pipePath, 0666)
-        return open(self.pipePath, 'r')
+        #os.chmod(self.pipePath, 0666)
+        return self.sock
+    
+    def readline(self):
+        
     
     def __exit__(self, type, value, traceback):
+        # Close socket.
+        self.sock.close()
         # Clean up the pipe we created.
         os.unlink(self.pipePath)
 

@@ -31,11 +31,11 @@ if($lastId = readGet('lastId')) {
 	}
 } elseif($cmd = readGet('cmd')) {
 	//There is a command to execute
-	if ($socket = create_socket(AF_UNIX, SOCK_STREAM, 0) AND
+	if ($socket = socket_create(AF_UNIX, SOCK_STREAM, 0) AND
 		socket_connect($socket, SOCKET_LOCATION) ) {
 		// Socket created and connected successfully, send data.
 		$cmd = $cmd.'\n';
-		socket_send($socket, $cmd, strlen($socket))
+		socket_send($socket, $cmd, strlen($cmd), 0);
 		socket_close($socket);
 	} else {
 		// Something went wrong, output error message.
